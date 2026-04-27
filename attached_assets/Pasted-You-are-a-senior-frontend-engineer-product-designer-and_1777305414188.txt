@@ -1,0 +1,124 @@
+You are a senior frontend engineer, product designer, and accessibility expert.
+
+I have an existing working project called "SignBridge" (single HTML file).
+It already includes:
+- Camera + Gemini Vision API for ISL sign detection
+- Web Speech API for speech-to-text and text-to-speech
+- Two modes: Deaf ↔ Hearing
+- Basic UI with camera, mic, and sign display
+
+Your task is to UPGRADE this into a polished, hackathon-winning product.
+
+-------------------------------------
+CRITICAL RULES
+-------------------------------------
+1. Keep everything in ONE single HTML file (no frameworks, no build tools)
+2. Do NOT remove existing functionality
+3. Improve UI, UX, and structure only
+4. Must run directly in browser (mobile Chrome priority)
+5. Return FULL UPDATED CODE only (no partial snippets)
+
+-------------------------------------
+GOALS
+-------------------------------------
+- Calm, friendly, “happy” user experience
+- Clean, modern UI (not dark + harsh)
+- Highly intuitive in first 5 seconds
+- Feels like a real product, not prototype
+
+-------------------------------------
+UI / UX IMPROVEMENTS
+-------------------------------------
+
+1. DESIGN SYSTEM
+- Replace current UI with:
+  - Soft gradient backgrounds (teal/blue for Deaf, amber/warm for Hearing)
+  - Glassmorphism cards (blur + soft transparency)
+  - Rounded corners (16–24px)
+  - Consistent spacing (8px system)
+- Improve typography hierarchy
+- Ensure high contrast and readability
+
+2. EMOTIONAL MICROCOPY
+Replace robotic text with friendly tone:
+- “Tap to speak” → “Tap and start speaking”
+- “Error” → “I couldn’t understand that, try again”
+- Add helpful hints everywhere
+
+3. ONBOARDING FLOW
+- Convert API key screen into step-based UI:
+  Step 1: Enter API key
+  Step 2: Allow camera
+  Step 3: Allow mic
+  Step 4: Ready screen
+- Add “Demo mode” fallback (mock responses if no API key)
+
+4. INTERACTIONS
+- Add animations:
+  - Button press feedback
+  - Card transitions (scale/fade)
+  - Loading states (animated, not static)
+- Add visual feedback during processing
+
+5. DEAF MODE IMPROVEMENTS
+- Improve camera experience:
+  - Add live hint text (“Hold steady”, “Move closer”)
+  - Improve guide box UI
+- Improve result display:
+  - Emoji + word + action hierarchy
+  - Add confidence indicator (mock if needed)
+
+6. HEARING MODE IMPROVEMENTS
+- Add mic animation (pulse while listening)
+- Show real-time transcript clearly
+- Convert sentences → multiple ISL signs
+  Example:
+    "I need water" → NEED 💧 WATER
+
+7. CONVERSATION MODE (IMPORTANT)
+- Add chat-style interface:
+  - Show history of interactions
+  - Separate Deaf and Hearing messages
+  - Include timestamps
+- This should feel like a conversation, not tools
+
+8. ACCESSIBILITY
+- Add:
+  - Large text toggle
+  - High contrast mode
+- Ensure all text is readable and clear
+
+9. POLISH
+- Add empty states
+- Improve spacing/alignment
+- Consistent icons
+- Remove clutter
+
+-------------------------------------
+TECH IMPROVEMENTS
+-------------------------------------
+- Organize JS into sections:
+  - camera
+  - speech
+  - UI
+- Improve error handling:
+  - API errors
+  - permission issues
+- Optimize for mobile performance
+
+-------------------------------------
+OUTPUT FORMAT (STRICT)
+-------------------------------------
+Return:
+1. FULL updated HTML file (complete, runnable)
+2. Clean structured CSS inside it
+3. Improved JS inside it
+
+No explanations. Only code.
+
+-------------------------------------
+REFERENCE
+-------------------------------------
+Here is my current code. Improve THIS (do not rewrite from scratch):
+
+[PASTE YOUR FULL CODE HERE]
