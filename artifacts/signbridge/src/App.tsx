@@ -35,17 +35,19 @@ export default function App() {
     setIsReady(false);
   };
 
-  const bgClass = mode === "deaf" 
-    ? "from-teal-50/80 to-blue-50/80 dark:from-teal-950/30 dark:to-blue-950/30"
-    : "from-amber-50/80 to-orange-50/80 dark:from-amber-950/30 dark:to-orange-950/30";
+  const accentClass = "from-sky-300/34 via-blue-300/18 to-cyan-200/22 dark:from-sky-400/16 dark:via-blue-500/12 dark:to-cyan-400/10";
 
   return (
-    <div className={`min-h-[100dvh] w-full overflow-hidden bg-gradient-to-br transition-colors duration-1000 ${bgClass}`}>
-      <div className="absolute top-4 right-4 z-50">
+    <div className="relative min-h-[100dvh] w-full overflow-hidden transition-colors duration-1000">
+      <div className={`absolute inset-x-[-18%] top-[-14%] h-[34rem] rounded-full bg-gradient-to-r blur-3xl transition-all duration-1000 ${accentClass}`} />
+      <div className="absolute left-[-12%] top-[24%] h-72 w-72 rounded-full bg-white/55 blur-3xl dark:bg-sky-400/8" />
+      <div className="absolute right-[-8%] bottom-[10%] h-80 w-80 rounded-full bg-sky-200/45 blur-3xl dark:bg-blue-400/10" />
+
+      <div className="absolute right-4 top-4 z-50">
         <button 
           data-testid="button-settings"
           onClick={() => setShowSettings(true)}
-          className="p-3 bg-white/50 dark:bg-black/30 backdrop-blur-md rounded-full shadow-sm text-foreground hover:bg-white dark:hover:bg-black/50 transition-colors"
+          className="frost-button h-11 w-11"
         >
           <SettingsIcon className="w-5 h-5" />
         </button>
@@ -53,11 +55,11 @@ export default function App() {
 
       <AnimatePresence mode="wait">
         {!isReady ? (
-          <motion.div key="onboarding" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full w-full flex items-center justify-center">
+          <motion.div key="onboarding" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="relative h-full w-full flex items-center justify-center px-4 pb-6 pt-20">
             <OnboardingFlow onComplete={() => setIsReady(true)} />
           </motion.div>
         ) : (
-          <motion.div key="app" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full w-full">
+          <motion.div key="app" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="relative h-full w-full">
             <ConversationView mode={mode} setMode={setMode} />
           </motion.div>
         )}

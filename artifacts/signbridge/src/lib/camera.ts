@@ -27,12 +27,14 @@ export function stopCamera(stream: MediaStream | null) {
 }
 
 export function captureFrame(videoEl: HTMLVideoElement): string {
+  const maxWidth = 512;
+  const scale = videoEl.videoWidth > maxWidth ? maxWidth / videoEl.videoWidth : 1;
   const canvas = document.createElement("canvas");
-  canvas.width = videoEl.videoWidth;
-  canvas.height = videoEl.videoHeight;
+  canvas.width = Math.max(1, Math.round(videoEl.videoWidth * scale));
+  canvas.height = Math.max(1, Math.round(videoEl.videoHeight * scale));
   const ctx = canvas.getContext("2d");
   if (!ctx) return "";
   ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
-  // Return Base64 JPEG
-  return canvas.toDataURL("image/jpeg", 0.8).split(",")[1];
+  // Downscale frames before upload to reduce payload size and API churn.
+  return canvas.toDataURL("image/jpeg", 0.62).split(",")[1];
 }

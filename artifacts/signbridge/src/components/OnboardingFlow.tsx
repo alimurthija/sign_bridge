@@ -8,6 +8,7 @@ export function OnboardingFlow({ onComplete }: { onComplete: () => void }) {
   const [apiKey, setApiKey] = useState(storage.getApiKey());
   const [camStatus, setCamStatus] = useState<"pending"|"granted"|"denied">("pending");
   const [micStatus, setMicStatus] = useState<"pending"|"granted"|"denied">("pending");
+  const hasConfiguredKey = !!apiKey.trim();
 
   const handleSaveKey = () => {
     if (apiKey.trim()) {
@@ -66,8 +67,8 @@ export function OnboardingFlow({ onComplete }: { onComplete: () => void }) {
             </div>
             <h2 className="text-2xl font-bold mb-3">Welcome to SignBridge</h2>
             <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
-              To understand your signs and speech, we need a Google Gemini API key. 
-              <br/><a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-primary underline mt-1 block">Get one free here</a>
+              You can run the app offline with built-in demo translation, or add a Google Gemini API key for real cloud recognition.
+              <br/><a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-primary underline mt-1 block">Optional: get a free Gemini key</a>
             </p>
             <div className="w-full space-y-3">
               <input
@@ -75,14 +76,14 @@ export function OnboardingFlow({ onComplete }: { onComplete: () => void }) {
                 type="password"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Paste API key..."
+                placeholder="Paste Gemini API key"
                 className="w-full bg-black/5 dark:bg-white/5 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none"
               />
-              <button data-testid="button-save-key" onClick={handleSaveKey} disabled={!apiKey.trim()} className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-semibold flex justify-center items-center gap-2 hover:opacity-90 disabled:opacity-50">
-                Save & continue <ChevronRight className="w-4 h-4" />
+              <button data-testid="button-save-key" onClick={handleSaveKey} disabled={!hasConfiguredKey} className="glass-button-primary w-full gap-2">
+                Use Gemini <ChevronRight className="w-4 h-4" />
               </button>
-              <button data-testid="button-demo-mode" onClick={handleDemoMode} className="w-full bg-secondary/10 text-secondary-foreground dark:text-secondary py-3 rounded-xl font-semibold flex justify-center items-center gap-2 hover:bg-secondary/20">
-                <Play className="w-4 h-4" /> Try Demo Mode (No Key)
+              <button data-testid="button-demo-mode" onClick={handleDemoMode} className="glass-button-secondary w-full gap-2 dark:text-slate-100">
+                <Play className="w-4 h-4" /> Continue offline now
               </button>
             </div>
           </motion.div>
@@ -99,7 +100,7 @@ export function OnboardingFlow({ onComplete }: { onComplete: () => void }) {
             </p>
             <div className="w-full space-y-3">
               {camStatus === "pending" && (
-                <button data-testid="button-allow-camera" onClick={requestCam} className="w-full bg-teal-600 text-white py-3 rounded-xl font-semibold hover:bg-teal-700">
+                <button data-testid="button-allow-camera" onClick={requestCam} className="glass-button-primary w-full">
                   Allow camera
                 </button>
               )}
@@ -113,7 +114,7 @@ export function OnboardingFlow({ onComplete }: { onComplete: () => void }) {
                   <AlertCircle className="w-5 h-5" /> Couldn't access camera.
                 </div>
               )}
-              <button data-testid="button-skip-camera" onClick={() => setStep(3)} className="w-full py-3 rounded-xl text-sm font-medium text-muted-foreground hover:bg-black/5">
+              <button data-testid="button-skip-camera" onClick={() => setStep(3)} className="glass-button-secondary w-full text-sm dark:text-slate-100">
                 Skip for now
               </button>
             </div>
@@ -131,7 +132,7 @@ export function OnboardingFlow({ onComplete }: { onComplete: () => void }) {
             </p>
             <div className="w-full space-y-3">
               {micStatus === "pending" && (
-                <button data-testid="button-allow-mic" onClick={requestMic} className="w-full bg-amber-500 text-white py-3 rounded-xl font-semibold hover:bg-amber-600">
+                <button data-testid="button-allow-mic" onClick={requestMic} className="glass-button-primary w-full">
                   Allow microphone
                 </button>
               )}
@@ -145,7 +146,7 @@ export function OnboardingFlow({ onComplete }: { onComplete: () => void }) {
                   <AlertCircle className="w-5 h-5" /> Couldn't access microphone.
                 </div>
               )}
-              <button data-testid="button-skip-mic" onClick={() => setStep(4)} className="w-full py-3 rounded-xl text-sm font-medium text-muted-foreground hover:bg-black/5">
+              <button data-testid="button-skip-mic" onClick={() => setStep(4)} className="glass-button-secondary w-full text-sm dark:text-slate-100">
                 Skip for now
               </button>
             </div>
@@ -161,7 +162,7 @@ export function OnboardingFlow({ onComplete }: { onComplete: () => void }) {
             <p className="text-muted-foreground text-sm mb-8">
               SignBridge is set up. Let's start the conversation.
             </p>
-            <button data-testid="button-finish-onboarding" onClick={finish} className="w-full bg-foreground text-background py-4 rounded-2xl font-bold text-lg shadow-xl hover:scale-[0.98] transition-transform">
+            <button data-testid="button-finish-onboarding" onClick={finish} className="glass-button-primary w-full text-lg font-bold">
               Start conversation
             </button>
           </motion.div>

@@ -11,6 +11,7 @@ export interface ConversationMessage {
   signs?: string[]; // for hearing -> deaf (the glossed signs)
   signConfidence?: number; // for deaf -> hearing
   timestamp: number;
+  isLive?: boolean;
 }
 
 const STORAGE_KEYS = {
@@ -21,20 +22,30 @@ const STORAGE_KEYS = {
   DEMO_MODE: "signbridge.demoMode",
 };
 
+const MAX_STORED_HISTORY = 24;
+
+function getEnvApiKey() {
+  return import.meta.env.VITE_GEMINI_API_KEY?.trim() || "";
+}
+
 export const storage = {
-  getApiKey: () => localStorage.getItem(STORAGE_KEYS.API_KEY) || "",
+  getApiKey: () => localStorage.getItem(STORAGE_KEYS.API_KEY) || getEnvApiKey(),
   setApiKey: (key: string) => localStorage.setItem(STORAGE_KEYS.API_KEY, key),
   
   getHistory: (): ConversationMessage[] => {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.HISTORY);
-      return data ? JSON.parse(data) : [];
+      const parsed = data ? JSON.parse(data) : [];
+      return Array.isArray(parsed) ? parsed.slice(-MAX_STORED_HISTORY) : [];
     } catch {
       return [];
     }
   },
   setHistory: (history: ConversationMessage[]) => {
-    localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(history));
+    localStorage.setItem(
+      STORAGE_KEYS.HISTORY,
+      JSON.stringify(history.slice(-MAX_STORED_HISTORY)),
+    );
   },
   
   getSettings: (): AppSettings => {
@@ -52,7 +63,7 @@ export const storage = {
   getOnboarded: () => localStorage.getItem(STORAGE_KEYS.ONBOARDED) === "true",
   setOnboarded: (value: boolean) => localStorage.setItem(STORAGE_KEYS.ONBOARDED, value ? "true" : "false"),
   
-  getDemoMode: () => localStorage.getItem(STORAGE_KEYS.DEMO_MODE) === "true",
+  getDemoMode: () => !getEnvApiKey() && localStorage.getItem(STORAGE_KEYS.DEMO_MODE) === "true",
   setDemoMode: (value: boolean) => localStorage.setItem(STORAGE_KEYS.DEMO_MODE, value ? "true" : "false"),
   
   clearAll: () => {

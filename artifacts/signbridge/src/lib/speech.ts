@@ -40,7 +40,11 @@ export function startListening({ onInterim, onFinal, onError }: SpeechOptions) {
 
   recognition.onerror = (event: any) => {
     console.error("Speech recognition error", event.error);
-    onError(event.error);
+    onError(new Error(event.error || "Speech recognition failed."));
+  };
+
+  recognition.onend = () => {
+    recognition = null;
   };
 
   recognition.start();
@@ -49,6 +53,7 @@ export function startListening({ onInterim, onFinal, onError }: SpeechOptions) {
 export function stopListening() {
   if (recognition) {
     recognition.stop();
+    recognition = null;
   }
 }
 

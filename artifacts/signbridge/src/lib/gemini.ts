@@ -1,3 +1,29 @@
+const GEMINI_MODEL = "gemini-2.5-flash";
+
+function formatGeminiError(status: number, payload: unknown) {
+  const message =
+    typeof payload === "object" &&
+    payload !== null &&
+    "error" in payload &&
+    typeof (payload as { error?: { message?: unknown } }).error?.message === "string"
+      ? (payload as { error: { message: string } }).error.message
+      : "";
+
+  if (status === 400) {
+    return `Gemini rejected the image request (400)${message ? `: ${message}` : "."}`;
+  }
+
+  if (status === 403) {
+    return `Gemini rejected the API key (403)${message ? `: ${message}` : "."}`;
+  }
+
+  if (status === 429) {
+    return `Gemini rate limit reached (429)${message ? `: ${message}` : "."}`;
+  }
+
+  return `Gemini sign recognition failed with status ${status}${message ? `: ${message}` : "."}`;
+}
+
 export async function recognizeSignFromImage(base64: string, apiKey: string, isDemo: boolean = false) {
   if (isDemo || !apiKey) {
     // Simulate network delay
@@ -13,7 +39,7 @@ export async function recognizeSignFromImage(base64: string, apiKey: string, isD
     return mocks[Math.floor(Math.random() * mocks.length)];
   }
 
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -37,7 +63,15 @@ export async function recognizeSignFromImage(base64: string, apiKey: string, isD
   });
 
   if (!response.ok) {
-    throw new Error("Failed to reach Gemini API");
+    let payload: unknown = null;
+
+    try {
+      payload = await response.json();
+    } catch {
+      payload = null;
+    }
+
+    throw new Error(formatGeminiError(response.status, payload));
   }
 
   const data = await response.json();
@@ -57,47 +91,4 @@ export async function recognizeSignFromImage(base64: string, apiKey: string, isD
   }
 }
 
-export async function sentenceToSignGloss(sentence: string, apiKey: string, isDemo: boolean = false): Promise<string[]> {
-  if (isDemo || !apiKey) {
-    await new Promise((resolve) => setTimeout(resolve, 400));
-    const dropWords = ["the", "a", "an", "is", "are", "am", "to"];
-    const words = sentence.split(/\s+/);
-    return words
-      .map(w => w.replace(/[^a-zA-Z]/g, "").toUpperCase())
-      .filter(w => w && !dropWords.includes(w.toLowerCase()));
-  }
-
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [
-        {
-          parts: [
-            { text: `Convert this English sentence to Indian Sign Language (ISL) gloss as an ordered sequence of UPPERCASE single-word signs. ISL grammar drops articles and uses topic-comment order. Return ONLY a JSON array of strings, e.g. ["WATER","NEED"]. Sentence: "${sentence}"` }
-          ]
-        }
-      ],
-      generationConfig: {
-        temperature: 0.1,
-      }
-    })
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to reach Gemini API");
-  }
-
-  const data = await response.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-  try {
-    const cleaned = text.replace(/```json/g, "").replace(/```/g, "").trim();
-    const parsed = JSON.parse(cleaned);
-    if (Array.isArray(parsed)) return parsed;
-    return [];
-  } catch (e) {
-    console.error("Failed to parse Gemini response:", text);
-    return [sentence.toUpperCase()]; // fallback
-  }
-}
+export { sentenceToSignGloss } from "@/lib/translation";

@@ -6,17 +6,17 @@ export function ConfidenceBar({ confidence }: { confidence: number }) {
   const isMed = confidence >= 50 && confidence < 80;
 
   const colorClass = isHigh
-    ? "bg-teal-500"
+    ? "bg-gradient-to-r from-cyan-400 to-sky-500"
     : isMed
-      ? "bg-amber-400"
-      : "bg-red-400";
+      ? "bg-gradient-to-r from-sky-400 to-indigo-500"
+      : "bg-gradient-to-r from-rose-400 to-orange-400";
 
   return (
     <div className="w-full flex items-center gap-2 mt-2">
-      <div className="text-[10px] font-semibold opacity-60 uppercase tracking-widest w-12">
+      <div className="text-[10px] font-semibold opacity-60 uppercase tracking-[0.18em] w-12">
         Conf
       </div>
-      <div className="flex-1 h-1.5 bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
+      <div className="flex-1 h-2 rounded-full overflow-hidden bg-slate-900/7 dark:bg-white/10">
         <motion.div
           className={`h-full ${colorClass}`}
           initial={{ width: 0 }}

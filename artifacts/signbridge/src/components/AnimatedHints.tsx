@@ -19,15 +19,15 @@ export function AnimatedHints() {
   }, []);
 
   return (
-    <div className="absolute top-4 left-0 right-0 flex justify-center pointer-events-none z-10">
+    <div className="absolute bottom-4 left-0 right-0 z-10 flex justify-center pointer-events-none">
       <AnimatePresence mode="wait">
         <motion.div
           key={index}
-          initial={{ opacity: 0, y: -5 }}
+          initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 5 }}
-          transition={{ duration: 0.4 }}
-          className="bg-black/50 backdrop-blur-md text-white text-xs font-medium px-3 py-1.5 rounded-full"
+          exit={{ opacity: 0, y: -5 }}
+          transition={{ duration: 0.35 }}
+          className="rounded-full border border-white/65 bg-white/55 px-3 py-1.5 text-[11px] font-semibold tracking-[0.14em] text-slate-600 uppercase shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/8 dark:text-slate-100"
         >
           {HINTS[index]}
         </motion.div>
