@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Camera, Mic, CheckCircle, AlertCircle } from "lucide-react";
 import { storage } from "@/lib/storage";
+import { useState } from "react";
+import { Key } from "lucide-react";
 
 export function OnboardingFlow({ onComplete }: { onComplete: () => void }) {
-  const [step, setStep] = useState(2);
+  const [step, setStep] = useState(1);
+  const [apiKey, setApiKey] = useState(storage.getApiKey());
   const [camStatus, setCamStatus] = useState<"pending"|"granted"|"denied">("pending");
   const [micStatus, setMicStatus] = useState<"pending"|"granted"|"denied">("pending");
 
@@ -50,6 +53,39 @@ export function OnboardingFlow({ onComplete }: { onComplete: () => void }) {
   return (
     <div className="flex-1 flex items-center justify-center p-6 w-full max-w-md mx-auto relative z-10">
       <AnimatePresence mode="wait">
+        {step === 1 && (
+          <motion.div key="step1" variants={cardVariants} initial="initial" animate="animate" exit="exit" className="glass-card w-full p-8 rounded-3xl flex flex-col items-center text-center">
+            <div className="w-12 h-12 bg-violet-500/20 text-violet-600 dark:text-violet-400 rounded-2xl flex items-center justify-center mb-6">
+              <Key className="w-6 h-6" />
+            </div>
+            <h2 className="text-2xl font-bold mb-3">Gemini API Key</h2>
+            <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
+              Paste your Gemini API key to power sign recognition. You can get one free from Google AI Studio.
+            </p>
+            <div className="w-full space-y-3">
+              <input
+                type="password"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="Paste your Gemini API key"
+                className="w-full px-4 py-3 text-sm rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <button
+                onClick={() => {
+                  storage.setApiKey(apiKey.trim());
+                  setStep(2);
+                }}
+                disabled={!apiKey.trim()}
+                className="glass-button-primary w-full disabled:opacity-50"
+              >
+                Continue
+              </button>
+              <button onClick={() => setStep(2)} className="glass-button-secondary w-full text-sm dark:text-slate-100">
+                Skip for now
+              </button>
+            </div>
+          </motion.div>
+        )}
         {step === 2 && (
           <motion.div key="step2" variants={cardVariants} initial="initial" animate="animate" exit="exit" className="glass-card w-full p-8 rounded-3xl flex flex-col items-center text-center">
             <div className="w-12 h-12 bg-teal-500/20 text-teal-600 dark:text-teal-400 rounded-2xl flex items-center justify-center mb-6">
