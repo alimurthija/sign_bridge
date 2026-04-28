@@ -1,10 +1,20 @@
-export async function startCamera(videoEl: HTMLVideoElement): Promise<MediaStream | null> {
+export type CameraFacingMode = "environment" | "user";
+
+export async function startCamera(
+  videoEl: HTMLVideoElement,
+  facingMode: CameraFacingMode = "environment",
+): Promise<MediaStream | null> {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     throw new Error("Camera not supported by this browser");
   }
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "environment" },
+      video: {
+        facingMode,
+        aspectRatio: { ideal: 3 / 4 },
+        width: { ideal: 720 },
+        height: { ideal: 960 },
+      },
     });
     videoEl.srcObject = stream;
     await new Promise<void>((resolve) => {

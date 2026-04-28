@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Camera as CameraIcon, AlertCircle, RefreshCw, Volume2, Dot } from "lucide-react";
-import { startCamera, stopCamera, captureFrame } from "@/lib/camera";
+import { Camera as CameraIcon, AlertCircle, RefreshCw, Volume2, Dot, RotateCcw } from "lucide-react";
+import { startCamera, stopCamera, captureFrame, type CameraFacingMode } from "@/lib/camera";
 import { recognizeSignFromImage } from "@/lib/gemini";
 import { speak } from "@/lib/speech";
 import { ConfidenceBar } from "./ConfidenceBar";
@@ -20,6 +20,7 @@ interface Props {
 
 export function DeafCapture({ onLiveUpdate, onCaptureResult }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const timeoutRef = useRef<number | null>(null);
   const isCapturingRef = useRef(false);
   const isLiveModeRef = useRef(false);
@@ -31,6 +32,7 @@ export function DeafCapture({ onLiveUpdate, onCaptureResult }: Props) {
   const [error, setError] = useState("");
   const [isCapturing, setIsCapturing] = useState(false);
   const [isLiveMode, setIsLiveMode] = useState(false);
+  const [facingMode, setFacingMode] = useState<CameraFacingMode>("environment");
   const [lastResult, setLastResult] = useState<{sign: string, meaning: string, confidence: number} | null>(null);
 
   const clearLiveTimeout = useCallback(() => {
@@ -70,26 +72,43 @@ export function DeafCapture({ onLiveUpdate, onCaptureResult }: Props) {
 
   const analyzeFrameRef = useRef<() => Promise<void>>(async () => {});
 
+  const connectCamera = useCallback(
+    async (nextFacingMode: CameraFacingMode) => {
+      if (!videoRef.current) {
+        return;
+      }
+
+      if (streamRef.current) {
+        stopCamera(streamRef.current);
+        streamRef.current = null;
+      }
+
+      const stream = await startCamera(videoRef.current, nextFacingMode);
+      streamRef.current = stream;
+      setError("");
+    },
+    [],
+  );
+
   useEffect(() => {
     isMountedRef.current = true;
-    let activeStream: MediaStream | null = null;
     const initCam = async () => {
-      if (videoRef.current) {
-        try {
-          activeStream = await startCamera(videoRef.current);
-          setError("");
-        } catch {
-          setError("Camera not available. Please check permissions.");
-        }
+      try {
+        await connectCamera(facingMode);
+      } catch {
+        setError("Camera not available. Please check permissions.");
       }
-    };
+    }
     initCam();
     return () => {
       isMountedRef.current = false;
       clearLiveTimeout();
-      if (activeStream) stopCamera(activeStream);
+      if (streamRef.current) {
+        stopCamera(streamRef.current);
+        streamRef.current = null;
+      }
     };
-  }, [clearLiveTimeout]);
+  }, [clearLiveTimeout, connectCamera, facingMode]);
 
   const analyzeFrame = useCallback(async () => {
     if (!videoRef.current || isCapturingRef.current) {
@@ -191,9 +210,21 @@ export function DeafCapture({ onLiveUpdate, onCaptureResult }: Props) {
     if (lastResult) speak(lastResult.meaning);
   };
 
+  const handleRotateCamera = async () => {
+    const nextFacingMode = facingMode === "environment" ? "user" : "environment";
+
+    try {
+      stopLiveCapture();
+      await connectCamera(nextFacingMode);
+      setFacingMode(nextFacingMode);
+    } catch {
+      setError("Couldn't switch cameras on this device.");
+    }
+  };
+
   return (
     <div className="grid gap-3">
-      <div className="relative aspect-[4/3] overflow-hidden rounded-[1.8rem] border border-white/65 bg-slate-950 shadow-[0_24px_64px_rgba(15,23,42,0.18)] dark:border-white/10">
+      <div className="relative aspect-[3/4] min-h-[26rem] overflow-hidden rounded-[1.8rem] border border-white/65 bg-slate-950 shadow-[0_24px_64px_rgba(15,23,42,0.18)] dark:border-white/10 sm:min-h-[32rem]">
         {error ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/92 p-6 text-center text-white">
             <AlertCircle className="mb-3 h-8 w-8 text-red-400" />
@@ -204,7 +235,7 @@ export function DeafCapture({ onLiveUpdate, onCaptureResult }: Props) {
           </div>
         ) : (
           <>
-            <video ref={videoRef} playsInline muted className="absolute inset-0 h-full w-full object-cover" />
+            <video ref={videoRef} playsInline muted className="absolute inset-0 h-full w-full object-cover object-center" />
             <div className="absolute inset-0 bg-gradient-to-b from-slate-950/24 via-transparent to-slate-950/34" />
             {isCapturing && (
               <motion.div
@@ -233,6 +264,13 @@ export function DeafCapture({ onLiveUpdate, onCaptureResult }: Props) {
                 {isLiveMode ? "Live" : "Standby"}
               </div>
             </div>
+            <button
+              type="button"
+              onClick={handleRotateCamera}
+              className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/18 bg-slate-950/32 text-white backdrop-blur-xl transition hover:bg-slate-950/42"
+            >
+              <RotateCcw className="h-4 w-4" />
+            </button>
           </>
         )}
       </div>
