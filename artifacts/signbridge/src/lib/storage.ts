@@ -65,7 +65,10 @@ export const storage = {
   
   getDemoMode: () => !getEnvApiKey() && localStorage.getItem(STORAGE_KEYS.DEMO_MODE) === "true",
   setDemoMode: (value: boolean) => localStorage.setItem(STORAGE_KEYS.DEMO_MODE, value ? "true" : "false"),
-  
+  getBackupApiKeys: (): string[] => {
+    try { return JSON.parse(localStorage.getItem("signbridge.backupApiKeys") || "[]"); } catch { return []; }
+  },
+  setBackupApiKeys: (keys: string[]) => localStorage.setItem("signbridge.backupApiKeys", JSON.stringify(keys)),
   clearAll: () => {
     Object.values(STORAGE_KEYS).forEach(k => localStorage.removeItem(k));
   }
