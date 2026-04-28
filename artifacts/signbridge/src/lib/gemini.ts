@@ -1,5 +1,3 @@
-import { storage } from "@/lib/storage";
-
 const GEMINI_MODEL = "gemini-2.5-flash";
 
 function formatGeminiError(status: number, payload: unknown) {
@@ -67,7 +65,12 @@ export async function recognizeSignFromImage(base64: string, apiKey: string, isD
     return mocks[Math.floor(Math.random() * mocks.length)];
   }
 
-  const keys = [apiKey, ...storage.getBackupApiKeys()].filter(Boolean);
+  const envBackups = [
+  import.meta.env.VITE_GEMINI_BACKUP_KEY_1?.trim(),
+  import.meta.env.VITE_GEMINI_BACKUP_KEY_2?.trim(),
+  import.meta.env.VITE_GEMINI_BACKUP_KEY_3?.trim(),
+].filter(Boolean);
+const keys = [apiKey, ...envBackups].filter(Boolean);
   for (let i = 0; i < keys.length; i++) {
     try {
       return await _recognizeWithKey(base64, keys[i]);

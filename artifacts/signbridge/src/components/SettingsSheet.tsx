@@ -104,35 +104,6 @@ export function SettingsSheet({ isOpen, onClose, settings, onUpdateSettings, onR
               </div>
 
               <div className="space-y-4 pt-4 border-t">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Backup API Keys</h3>
-                <div className="text-xs text-muted-foreground">Added if main key fails or hits rate limit</div>
-                {storage.getBackupApiKeys().map((k, i) => (
-                  <div key={i} className="flex gap-2">
-                    <input
-                      type="password"
-                      defaultValue={k}
-                      onBlur={(e) => {
-                        const keys = storage.getBackupApiKeys();
-                        keys[i] = e.target.value.trim();
-                        storage.setBackupApiKeys(keys.filter(Boolean));
-                      }}
-                      className="flex-1 px-3 py-2 text-sm rounded-md border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
-                    <button onClick={() => {
-                      const keys = storage.getBackupApiKeys().filter((_, j) => j !== i);
-                      storage.setBackupApiKeys(keys);
-                    }} className="px-2 py-1 text-xs rounded-md bg-red-100 text-red-600">✕</button>
-                  </div>
-                ))}
-                <button
-                  onClick={() => storage.setBackupApiKeys([...storage.getBackupApiKeys(), ""])}
-                  className="w-full px-3 py-2 rounded-md border border-dashed text-sm text-muted-foreground hover:bg-muted"
-                >
-                  + Add backup key
-                </button>
-              </div>
-
-              <div className="space-y-4 pt-4 border-t">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">App</h3>
                 
                 <button 
