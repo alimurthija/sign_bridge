@@ -1,6 +1,7 @@
 import { Settings, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AppSettings } from "@/lib/storage";
+import { AppSettings, storage } from "@/lib/storage";
+import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 
 interface Props {
@@ -12,6 +13,10 @@ interface Props {
 }
 
 export function SettingsSheet({ isOpen, onClose, settings, onUpdateSettings, onReOnboard }: Props) {
+  const [apiKey, setApiKey] = useState(storage.getApiKey());
+  const handleSaveApiKey = () => {
+    storage.setApiKey(apiKey.trim());
+  };
   return (
     <AnimatePresence>
       {isOpen && (
@@ -78,6 +83,26 @@ export function SettingsSheet({ isOpen, onClose, settings, onUpdateSettings, onR
                 </div>
               </div>
               
+              <div className="space-y-4 pt-4 border-t">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">API Key</h3>
+                <div className="space-y-2">
+                  <div className="text-xs text-muted-foreground">Gemini API Key</div>
+                  <input
+                    type="password"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder="Paste your Gemini API key"
+                    className="w-full px-3 py-2 text-sm rounded-md border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  <button
+                    onClick={handleSaveApiKey}
+                    className="w-full px-3 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+                  >
+                    Save API Key
+                  </button>
+                </div>
+              </div>
+
               <div className="space-y-4 pt-4 border-t">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">App</h3>
                 
