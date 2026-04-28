@@ -1,28 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, Mic, Key, CheckCircle, ChevronRight, Play, AlertCircle } from "lucide-react";
+import { Camera, Mic, CheckCircle, AlertCircle } from "lucide-react";
 import { storage } from "@/lib/storage";
 
 export function OnboardingFlow({ onComplete }: { onComplete: () => void }) {
-  const [step, setStep] = useState(1);
-  const [apiKey, setApiKey] = useState(storage.getApiKey());
+  const [step, setStep] = useState(2);
   const [camStatus, setCamStatus] = useState<"pending"|"granted"|"denied">("pending");
   const [micStatus, setMicStatus] = useState<"pending"|"granted"|"denied">("pending");
-  const hasConfiguredKey = !!apiKey.trim();
 
-  const handleSaveKey = () => {
-    if (apiKey.trim()) {
-      storage.setApiKey(apiKey.trim());
-      storage.setDemoMode(false);
-      setStep(2);
+  useEffect(() => {
+    if (!storage.getApiKey().trim()) {
+      storage.setDemoMode(true);
     }
-  };
-
-  const handleDemoMode = () => {
-    storage.setDemoMode(true);
-    storage.setApiKey("");
-    setStep(2);
-  };
+  }, []);
 
   const requestCam = async () => {
     try {
@@ -60,35 +50,6 @@ export function OnboardingFlow({ onComplete }: { onComplete: () => void }) {
   return (
     <div className="flex-1 flex items-center justify-center p-6 w-full max-w-md mx-auto relative z-10">
       <AnimatePresence mode="wait">
-        {step === 1 && (
-          <motion.div key="step1" variants={cardVariants} initial="initial" animate="animate" exit="exit" className="glass-card w-full p-8 rounded-3xl flex flex-col items-center text-center">
-            <div className="w-12 h-12 bg-primary/20 text-primary rounded-2xl flex items-center justify-center mb-6">
-              <Key className="w-6 h-6" />
-            </div>
-            <h2 className="text-2xl font-bold mb-3">Welcome to SignBridge</h2>
-            <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
-              You can run the app offline with built-in demo translation, or add a Google Gemini API key for real cloud recognition.
-              <br/><a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-primary underline mt-1 block">Optional: get a free Gemini key</a>
-            </p>
-            <div className="w-full space-y-3">
-              <input
-                data-testid="input-apikey"
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Paste Gemini API key"
-                className="w-full bg-black/5 dark:bg-white/5 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none"
-              />
-              <button data-testid="button-save-key" onClick={handleSaveKey} disabled={!hasConfiguredKey} className="glass-button-primary w-full gap-2">
-                Use Gemini <ChevronRight className="w-4 h-4" />
-              </button>
-              <button data-testid="button-demo-mode" onClick={handleDemoMode} className="glass-button-secondary w-full gap-2 dark:text-slate-100">
-                <Play className="w-4 h-4" /> Continue offline now
-              </button>
-            </div>
-          </motion.div>
-        )}
-
         {step === 2 && (
           <motion.div key="step2" variants={cardVariants} initial="initial" animate="animate" exit="exit" className="glass-card w-full p-8 rounded-3xl flex flex-col items-center text-center">
             <div className="w-12 h-12 bg-teal-500/20 text-teal-600 dark:text-teal-400 rounded-2xl flex items-center justify-center mb-6">

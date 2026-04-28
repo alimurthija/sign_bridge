@@ -88,7 +88,7 @@ export function SettingsSheet({ isOpen, onClose, settings, onUpdateSettings, onR
                   }}
                   className="w-full text-left px-3 py-2 -mx-3 rounded-md hover:bg-muted text-sm font-medium transition-colors"
                 >
-                  Restart Setup (Change API Key)
+                  Restart Setup
                 </button>
               </div>
             </div>
