@@ -240,7 +240,7 @@ useEffect(() => {
           </div>
         ) : (
           <>
-            <video ref={videoRef} playsInline muted className="absolute inset-0 h-full w-full object-cover object-center" />
+            <video ref={videoRef} playsInline muted className="absolute inset-0 h-full w-full object-contain object-center" />
             <div className="absolute inset-0 bg-gradient-to-b from-slate-950/24 via-transparent to-slate-950/34" />
             {isCapturing && (
               <motion.div
