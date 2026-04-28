@@ -113,7 +113,7 @@ useEffect(() => {
         streamRef.current = null;
       }
     };
-  }, [clearLiveTimeout, connectCamera, facingMode]);
+  }, [clearLiveTimeout, connectCamera]); // 👈 removed facingMode
 
   const analyzeFrame = useCallback(async () => {
     if (!videoRef.current || isCapturingRef.current) {
