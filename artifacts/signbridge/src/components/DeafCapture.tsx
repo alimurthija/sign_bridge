@@ -34,6 +34,11 @@ export function DeafCapture({ onLiveUpdate, onCaptureResult }: Props) {
   const [isLiveMode, setIsLiveMode] = useState(false);
   const [facingMode, setFacingMode] = useState<CameraFacingMode>("environment");
   const [lastResult, setLastResult] = useState<{sign: string, meaning: string, confidence: number} | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+useEffect(() => {
+  setIsMobile(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
+}, []);
 
   const clearLiveTimeout = useCallback(() => {
     if (timeoutRef.current !== null) {
@@ -264,13 +269,15 @@ export function DeafCapture({ onLiveUpdate, onCaptureResult }: Props) {
                 {isLiveMode ? "Live" : "Standby"}
               </div>
             </div>
-            <button
-              type="button"
-              onClick={handleRotateCamera}
-              className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/18 bg-slate-950/32 text-white backdrop-blur-xl transition hover:bg-slate-950/42"
-            >
-              <RotateCcw className="h-4 w-4" />
-            </button>
+            {isMobile && (
+              <button
+                type="button"
+                onClick={handleRotateCamera}
+                className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/18 bg-slate-950/32 text-white backdrop-blur-xl transition hover:bg-slate-950/42"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </button>
+            )}
           </>
         )}
       </div>
