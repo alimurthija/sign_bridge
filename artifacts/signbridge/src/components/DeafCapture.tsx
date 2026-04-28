@@ -229,7 +229,7 @@ useEffect(() => {
 
   return (
     <div className="grid gap-3">
-      <div className="relative aspect-[3/4] min-h-[26rem] overflow-hidden rounded-[1.8rem] border border-white/65 bg-slate-950 shadow-[0_24px_64px_rgba(15,23,42,0.18)] dark:border-white/10 sm:min-h-[32rem]">
+      <div className="relative w-full aspect-[3/4] overflow-hidden rounded-[1.8rem] border border-white/65 bg-slate-950 shadow-[0_24px_64px_rgba(15,23,42,0.18)] dark:border-white/10">
         {error ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/92 p-6 text-center text-white">
             <AlertCircle className="mb-3 h-8 w-8 text-red-400" />
