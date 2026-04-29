@@ -52,10 +52,9 @@ export function HearingCapture({ onLiveUpdate, onCaptureResult }: Props) {
   };
 
   const handleStop = () => {
-    stopListening();
-    setIsListening(false);
-    setInterim("");
-  };
+  stopListening();
+  setIsListening(false);
+};
 
   const processText = async (text: string) => {
     const trimmed = text.trim();

@@ -49,7 +49,7 @@ function parseGlossResponse(text: string): string[] {
 
 async function _translateWithKey(text: string, apiKey: string): Promise<string[]> {
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
