@@ -7,7 +7,9 @@ export interface SpeechOptions {
 let recognition: any = null;
 
 export function startListening({ onInterim, onFinal, onError }: SpeechOptions) {
-  const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+  const SpeechRecognition =
+    (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
   if (!SpeechRecognition) {
     onError(new Error("Speech recognition not supported in this browser."));
     return;
@@ -22,6 +24,7 @@ export function startListening({ onInterim, onFinal, onError }: SpeechOptions) {
 
   recognition.onresult = (event: any) => {
     let interimTranscript = "";
+
     for (let i = event.resultIndex; i < event.results.length; ++i) {
       if (event.results[i].isFinal) {
         finalTranscript += event.results[i][0].transcript;
@@ -29,8 +32,15 @@ export function startListening({ onInterim, onFinal, onError }: SpeechOptions) {
         interimTranscript += event.results[i][0].transcript;
       }
     }
+
     if (interimTranscript) {
       onInterim(interimTranscript);
+    }
+
+    // ✅ FIX: Call onFinal immediately when a final result arrives,
+    // don't wait for onend — onend may fire before this result is processed
+    if (finalTranscript.trim()) {
+      onFinal(finalTranscript.trim());
     }
   };
 
@@ -40,9 +50,7 @@ export function startListening({ onInterim, onFinal, onError }: SpeechOptions) {
   };
 
   recognition.onend = () => {
-    if (finalTranscript.trim()) {
-      onFinal(finalTranscript.trim());
-    }
+    // onFinal is already called above; just clean up
     recognition = null;
   };
 
@@ -56,14 +64,31 @@ export function stopListening() {
   }
 }
 
+// ✅ FIX: Wait for voices to load before trying to pick one
 export function speak(text: string) {
   if (!window.speechSynthesis) return;
+
   const utterance = new SpeechSynthesisUtterance(text);
-  const voices = window.speechSynthesis.getVoices();
-  const preferredVoice = voices.find(v => v.lang.includes("en") && (v.name.includes("Google") || v.name.includes("Samantha") || v.name.includes("Natural")));
-  if (preferredVoice) {
-    utterance.voice = preferredVoice;
-  }
   utterance.rate = 0.9;
-  window.speechSynthesis.speak(utterance);
+
+  const pickVoice = () => {
+    const voices = window.speechSynthesis.getVoices();
+    const preferredVoice = voices.find(
+      (v) =>
+        v.lang.includes("en") &&
+        (v.name.includes("Google") ||
+          v.name.includes("Samantha") ||
+          v.name.includes("Natural"))
+    );
+    if (preferredVoice) utterance.voice = preferredVoice;
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length > 0) {
+    pickVoice();
+  } else {
+    // Voices not loaded yet — wait for the event
+    window.speechSynthesis.addEventListener("voiceschanged", pickVoice, { once: true });
+  }
 }
