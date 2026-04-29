@@ -1,4 +1,4 @@
-const GEMINI_MODEL = "gemini-2.5-flash";
+const GEMINI_MODEL = "gemini-1.5-flash";
 
 function formatGeminiError(status: number, payload: unknown) {
   const message =
@@ -29,6 +29,9 @@ async function _recognizeWithKey(base64: string, apiKey: string) {
     })
   });
 
+  if (response.status === 503) {
+    throw new Error("503");
+  }
   if (!response.ok) {
     let payload: unknown = null;
     try { payload = await response.json(); } catch { payload = null; }
