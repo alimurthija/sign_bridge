@@ -8,16 +8,16 @@ let recognition: any = null;
 
 export function startListening({ onInterim, onFinal, onError }: SpeechOptions) {
   const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-  
   if (!SpeechRecognition) {
     onError(new Error("Speech recognition not supported in this browser."));
     return;
   }
 
   recognition = new SpeechRecognition();
-  recognition.continuous = true;
+  recognition.continuous = false;
   recognition.interimResults = true;
-  
+  recognition.lang = "en-IN";
+
   let finalTranscript = "";
 
   recognition.onresult = (event: any) => {
@@ -29,12 +29,8 @@ export function startListening({ onInterim, onFinal, onError }: SpeechOptions) {
         interimTranscript += event.results[i][0].transcript;
       }
     }
-    
-    if (finalTranscript && !interimTranscript) {
-        onFinal(finalTranscript);
-        finalTranscript = "";
-    } else if (interimTranscript) {
-        onInterim(interimTranscript);
+    if (interimTranscript) {
+      onInterim(interimTranscript);
     }
   };
 
@@ -44,6 +40,9 @@ export function startListening({ onInterim, onFinal, onError }: SpeechOptions) {
   };
 
   recognition.onend = () => {
+    if (finalTranscript.trim()) {
+      onFinal(finalTranscript.trim());
+    }
     recognition = null;
   };
 
@@ -60,12 +59,11 @@ export function stopListening() {
 export function speak(text: string) {
   if (!window.speechSynthesis) return;
   const utterance = new SpeechSynthesisUtterance(text);
-  // Try to find a friendly English voice
   const voices = window.speechSynthesis.getVoices();
   const preferredVoice = voices.find(v => v.lang.includes("en") && (v.name.includes("Google") || v.name.includes("Samantha") || v.name.includes("Natural")));
   if (preferredVoice) {
-      utterance.voice = preferredVoice;
+    utterance.voice = preferredVoice;
   }
-  utterance.rate = 0.9; // slightly calmer
+  utterance.rate = 0.9;
   window.speechSynthesis.speak(utterance);
 }
