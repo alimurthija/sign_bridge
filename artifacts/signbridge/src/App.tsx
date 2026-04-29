@@ -13,8 +13,8 @@ export default function App() {
   const [settings, setSettings] = useState<AppSettings>(storage.getSettings());
 
   useEffect(() => {
-    setIsReady(storage.getOnboarded());
-  }, []);
+  setIsReady(false);
+}, []);
 
   useEffect(() => {
     const root = document.documentElement;
