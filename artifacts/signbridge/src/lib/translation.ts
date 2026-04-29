@@ -2,7 +2,7 @@ import { storage } from "@/lib/storage";
 
 const DEMO_DELAY_MS = 200;
 const DROP_WORDS = new Set(["the", "a", "an", "is", "are", "am", "to"]);
-const GEMINI_MODEL = "gemini-1.5-flash";
+const GEMINI_MODEL = "gemini-2.5-flash";
 
 export type TranslationErrorCode = "EMPTY_INPUT" | "NETWORK_ERROR" | "INVALID_RESPONSE";
 
