@@ -12,8 +12,8 @@ export async function startCamera(
       video: {
         facingMode,
         aspectRatio: { ideal: 3 / 4 },
-        width: { ideal: 480 },
-        height: { ideal: 640 },
+        width: { ideal: 720 },
+        height: { ideal: 960 },
       },
     });
     videoEl.srcObject = stream;
@@ -37,7 +37,7 @@ export function stopCamera(stream: MediaStream | null) {
 }
 
 export function captureFrame(videoEl: HTMLVideoElement): string {
-  const maxWidth = 320;
+  const maxWidth = 480;
   const scale = videoEl.videoWidth > maxWidth ? maxWidth / videoEl.videoWidth : 1;
   const canvas = document.createElement("canvas");
   canvas.width = Math.max(1, Math.round(videoEl.videoWidth * scale));
@@ -45,5 +45,5 @@ export function captureFrame(videoEl: HTMLVideoElement): string {
   const ctx = canvas.getContext("2d");
   if (!ctx) return "";
   ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
-  return canvas.toDataURL("image/jpeg", 0.4).split(",")[1];
+  return canvas.toDataURL("image/jpeg", 0.55).split(",")[1];
 }
